@@ -26,7 +26,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   @override
   void initState() {
     super.initState();
-    _selectedClient = SessionManager.getClient();
+    _selectedClient = 'laxmipratima';
+    SessionManager.setClient('laxmipratima');
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1200),
