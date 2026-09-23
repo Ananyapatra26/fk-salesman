@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:fk_salesman/core/constants/app_colors.dart';
 import 'package:fk_salesman/core/constants/app_text_styles.dart';
+import 'package:fk_salesman/core/widgets/app_alert.dart';
 import '../providers/dip_density_provider.dart';
 import '../../data/models/fuel_tank_model.dart';
 
@@ -106,11 +107,9 @@ class _DipEntryScreenState extends State<DipEntryScreen> {
         final sizeInBytes = await file.length();
         if (sizeInBytes > 1024 * 1024) {
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text("Image size must be less than 1MB"),
-                backgroundColor: Colors.redAccent,
-              ),
+            AppAlert.showWarning(
+              context,
+              message: "Image size must be less than 1MB",
             );
           }
           return;
@@ -126,8 +125,9 @@ class _DipEntryScreenState extends State<DipEntryScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error picking image: $e")),
+        AppAlert.showError(
+          context,
+          message: "Error picking image: $e",
         );
       }
     }
@@ -139,22 +139,25 @@ class _DipEntryScreenState extends State<DipEntryScreen> {
     }
 
     if (_selectedTank == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please select a Fuel Tank.")),
+      AppAlert.showWarning(
+        context,
+        message: "Please select a Fuel Tank.",
       );
       return;
     }
 
     if (_dipLevelPhoto == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please upload Dip level photo.")),
+      AppAlert.showWarning(
+        context,
+        message: "Please upload Dip level photo.",
       );
       return;
     }
 
     if (_waterLevelPhoto == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please upload Water level photo.")),
+      AppAlert.showWarning(
+        context,
+        message: "Please upload Water level photo.",
       );
       return;
     }
@@ -170,19 +173,15 @@ class _DipEntryScreenState extends State<DipEntryScreen> {
 
     if (mounted) {
       if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("DIP entry submitted successfully!"),
-            backgroundColor: Colors.green,
-          ),
+        await AppAlert.showSuccess(
+          context,
+          message: "DIP entry submitted successfully!",
         );
-        context.go('/dashboard');
+        if (mounted) context.go('/dashboard');
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(provider.error ?? "Failed to submit DIP entry"),
-            backgroundColor: Colors.redAccent,
-          ),
+        AppAlert.showError(
+          context,
+          message: provider.error ?? "Failed to submit DIP entry",
         );
       }
     }

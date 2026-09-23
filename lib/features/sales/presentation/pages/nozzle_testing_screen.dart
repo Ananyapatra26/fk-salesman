@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:fk_salesman/core/constants/app_colors.dart';
 import 'package:fk_salesman/core/constants/app_text_styles.dart';
+import 'package:fk_salesman/core/widgets/app_alert.dart';
 import 'package:fk_salesman/features/dashboard/presentation/providers/dashboard_provider.dart';
 import '../../data/models/nozzle_testing_request.dart';
 import '../../data/services/testing_service.dart';
@@ -50,13 +51,11 @@ class _NozzleTestingScreenState extends State<NozzleTestingScreen> {
       });
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString()),
-            backgroundColor: Colors.redAccent,
-          ),
+        await AppAlert.showError(
+          context,
+          message: e.toString(),
         );
-        Navigator.pop(context);
+        if (mounted) Navigator.pop(context);
       }
     }
   }
@@ -75,11 +74,9 @@ class _NozzleTestingScreenState extends State<NozzleTestingScreen> {
         final sizeInBytes = await file.length();
         if (sizeInBytes > 1024 * 1024) {
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text("Image size must be less than 1MB"),
-                backgroundColor: Colors.redAccent,
-              ),
+            AppAlert.showWarning(
+              context,
+              message: "Image size must be less than 1MB",
             );
           }
           return;
@@ -97,9 +94,10 @@ class _NozzleTestingScreenState extends State<NozzleTestingScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
+        AppAlert.showError(
           context,
-        ).showSnackBar(SnackBar(content: Text("Error picking image: $e")));
+          message: "Error picking image: $e",
+        );
       }
     }
   }
@@ -110,8 +108,9 @@ class _NozzleTestingScreenState extends State<NozzleTestingScreen> {
     }
 
     if (_image1 == null || _image2 == null || _image3 == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please upload all three images.")),
+      AppAlert.showWarning(
+        context,
+        message: "Please upload all three images.",
       );
       return;
     }
@@ -140,23 +139,17 @@ class _NozzleTestingScreenState extends State<NozzleTestingScreen> {
         // Refresh dashboard data and wait for it
         await context.read<DashboardProvider>().fetchNozzles();
         
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              response['message'] ?? "Testing info submitted successfully",
-            ),
-            backgroundColor: Colors.green,
-          ),
+        await AppAlert.showSuccess(
+          context,
+          message: response['message'] ?? "Testing info submitted successfully",
         );
-        context.go('/dashboard');
+        if (mounted) context.go('/dashboard');
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString()),
-            backgroundColor: Colors.redAccent,
-          ),
+        AppAlert.showError(
+          context,
+          message: e.toString(),
         );
       }
     } finally {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fk_salesman/core/constants/app_colors.dart';
 import 'package:fk_salesman/core/constants/app_text_styles.dart';
+import 'package:fk_salesman/core/widgets/app_alert.dart';
 import '../../data/services/sales_service.dart';
 import '../../data/models/payment_method_model.dart';
 
@@ -53,11 +54,9 @@ class _SalesEntryFormScreenState extends State<SalesEntryFormScreen> {
         _isLoading = false;
       });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Error fetching payment methods: $e"),
-            backgroundColor: Colors.red,
-          ),
+        AppAlert.showError(
+          context,
+          message: "Error fetching payment methods: $e",
         );
       }
     }
@@ -96,18 +95,17 @@ class _SalesEntryFormScreenState extends State<SalesEntryFormScreen> {
       await _salesService.submitShiftWiseSales(sales);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Sales entry submitted successfully!"),
-            backgroundColor: Colors.green,
-          ),
+        await AppAlert.showSuccess(
+          context,
+          message: "Sales entry submitted successfully!",
         );
-        context.go('/dashboard');
+        if (mounted) context.go('/dashboard');
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error: $e"), backgroundColor: Colors.red),
+        AppAlert.showError(
+          context,
+          message: "Error: $e",
         );
       }
     } finally {

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fk_salesman/core/constants/app_colors.dart';
+import 'package:fk_salesman/core/widgets/app_alert.dart';
 import 'package:fk_salesman/features/dashboard/presentation/providers/dashboard_provider.dart';
 
 class AttendanceScreen extends StatefulWidget {
@@ -38,17 +39,19 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
       await prefs.setString("attendance_time", timeFormatted);
       await prefs.setString("attendance_shift", selectedShift);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Attendance Marked Successfully!'), backgroundColor: Colors.green),
+      await AppAlert.showSuccess(
+        context,
+        message: 'Attendance Marked Successfully!',
       );
       
-      context.go('/dashboard');
+      if (mounted) context.go('/dashboard');
     } else if (mounted) {
       setState(() {
         _isLoading = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(provider.error ?? 'Failed to mark attendance'), backgroundColor: Colors.redAccent),
+      AppAlert.showError(
+        context,
+        message: provider.error ?? 'Failed to mark attendance',
       );
     }
   }

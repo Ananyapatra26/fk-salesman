@@ -7,6 +7,7 @@ import 'package:fk_salesman/core/constants/app_colors.dart';
 import 'package:fk_salesman/core/constants/app_text_styles.dart';
 import 'package:fk_salesman/features/auth/presentation/providers/auth_provider.dart';
 import 'package:fk_salesman/core/utils/session_manager.dart';
+import 'package:fk_salesman/core/widgets/app_alert.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -64,19 +65,17 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     
     final success = await authProvider.sendOtp();
     if (success && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('OTP sent successfully!'),
-          backgroundColor: Colors.green,
-        ),
+      await AppAlert.showSuccess(
+        context,
+        message: 'OTP sent successfully!',
       );
-      context.push('/otp', extra: _phoneController.text);
+      if (mounted) {
+        context.push('/otp', extra: _phoneController.text);
+      }
     } else if (!success && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(authProvider.error ?? 'Something went wrong'),
-          backgroundColor: Colors.redAccent,
-        ),
+      AppAlert.showError(
+        context,
+        message: authProvider.error ?? 'Something went wrong',
       );
     }
   }

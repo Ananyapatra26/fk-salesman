@@ -11,6 +11,7 @@ import 'package:fk_salesman/features/dashboard/presentation/widgets/dashboard_sh
 import '../../../../core/widgets/glass_container.dart';
 import '../../domain/models/nozzle_model.dart';
 import 'package:fk_salesman/features/auth/presentation/providers/auth_provider.dart';
+import 'package:fk_salesman/core/widgets/app_alert.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -360,7 +361,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     if (result != null && mounted) {
       final provider = context.read<DashboardProvider>();
-      final messenger = ScaffoldMessenger.of(context);
       final navigator = Navigator.of(context);
 
       _showRemovalPopup(context);
@@ -371,22 +371,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
       navigator.pop(); // close loader dialog
 
       if (success) {
-        messenger.showSnackBar(
-          SnackBar(
-            content: Text('Removed Nozzle ${nozzle.number}'),
-            backgroundColor: Colors.green,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          ),
+        AppAlert.showSuccess(
+          context,
+          message: 'Removed Nozzle ${nozzle.number}',
         );
       } else {
-        messenger.showSnackBar(
-          SnackBar(
-            content: Text(provider.error ?? 'Failed to remove nozzle'),
-            backgroundColor: Colors.redAccent,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          ),
+        AppAlert.showError(
+          context,
+          message: provider.error ?? 'Failed to remove nozzle',
         );
       }
     }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fk_salesman/core/constants/app_colors.dart';
 import 'package:fk_salesman/core/constants/app_text_styles.dart';
+import 'package:fk_salesman/core/widgets/app_alert.dart';
 import 'package:flutter/services.dart';
 
 import '../dashboard/data/services/nozzle_service.dart';
@@ -114,11 +115,9 @@ class _SalesFormPageState extends State<SalesFormPage>
     } catch (e) {
       if (mounted) {
         setState(() => _isFetchingDetails = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error fetching nozzle details: $e'),
-            backgroundColor: Colors.red,
-          ),
+        AppAlert.showError(
+          context,
+          message: 'Error fetching nozzle details: $e',
         );
       }
     }
@@ -173,15 +172,17 @@ class _SalesFormPageState extends State<SalesFormPage>
 
   Future<void> _saveEntry() async {
     if (_calculatedAmount <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a valid amount or liters'),backgroundColor: Colors.red,),
+      AppAlert.showWarning(
+        context,
+        message: 'Please enter a valid amount or liters',
       );
       return;
     }
 
     if (_calculatedAmount > 9999999) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Amount cannot exceed 9,999,999'),backgroundColor: Colors.red,),
+      AppAlert.showWarning(
+        context,
+        message: 'Amount cannot exceed 9,999,999',
       );
       return;
     }
@@ -216,11 +217,9 @@ class _SalesFormPageState extends State<SalesFormPage>
       final result = await _salesService.storeSalesEntry(model);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(result['message'] ?? 'Entry saved successfully'),
-            backgroundColor: Colors.green,
-          ),
+        AppAlert.showSuccess(
+          context,
+          message: result['message'] ?? 'Entry saved successfully',
         );
 
         // Reset fields immediately
@@ -235,11 +234,9 @@ class _SalesFormPageState extends State<SalesFormPage>
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString().replaceAll('Exception: ', '')),
-            backgroundColor: Colors.red,
-          ),
+        AppAlert.showError(
+          context,
+          message: e.toString().replaceAll('Exception: ', ''),
         );
       }
     } finally {
@@ -1174,13 +1171,9 @@ class _MaxLimitFormatter extends TextInputFormatter {
 
     // Check 7 digit limit (excluding decimal point)
     if (newValue.text.replaceAll('.', '').length > 7) {
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Maximum 7 digits allowed'),
-          backgroundColor: Colors.red,
-          duration: Duration(seconds: 1),
-        ),
+      AppAlert.showWarning(
+        context,
+        message: 'Maximum 7 digits allowed',
       );
       return oldValue;
     }

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fk_salesman/core/constants/app_colors.dart';
 import 'package:fk_salesman/core/constants/app_text_styles.dart';
+import 'package:fk_salesman/core/widgets/app_alert.dart';
 import '../providers/dashboard_provider.dart';
 
 class CheckoutFormPage extends StatefulWidget {
@@ -103,13 +104,9 @@ class _CheckoutFormPageState extends State<CheckoutFormPage> {
     // Validate inputs
     for (var nozzle in provider.mySelectedNozzles) {
       if (_controllers[nozzle.id]?.text.isEmpty ?? true) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Please enter closing reading for nozzle ${nozzle.number}',
-            ),
-            backgroundColor: Colors.red,
-          ),
+        AppAlert.showWarning(
+          context,
+          message: 'Please enter closing reading for nozzle ${nozzle.number}',
         );
         return;
       }
@@ -140,22 +137,18 @@ class _CheckoutFormPageState extends State<CheckoutFormPage> {
     if (success && mounted) {
       // Refresh dashboard data immediately to reflect the shift closure state
       provider.fetchNozzles();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Checked out successfully!'),
-          backgroundColor: Colors.green,
-        ),
+      await AppAlert.showSuccess(
+        context,
+        message: 'Checked out successfully!',
       );
-      context.go('/dashboard');
+      if (mounted) context.go('/dashboard');
     } else if (mounted) {
       setState(() {
         _isSubmitting = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(provider.error ?? 'Failed to check out'),
-          backgroundColor: Colors.redAccent,
-        ),
+      AppAlert.showError(
+        context,
+        message: provider.error ?? 'Failed to check out',
       );
     }
   }

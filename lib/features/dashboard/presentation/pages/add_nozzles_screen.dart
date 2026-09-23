@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fk_salesman/core/constants/app_colors.dart';
 import 'package:fk_salesman/core/widgets/glass_container.dart';
+import 'package:fk_salesman/core/widgets/app_alert.dart';
 import 'package:fk_salesman/features/dashboard/presentation/providers/dashboard_provider.dart';
 import 'package:fk_salesman/features/dashboard/presentation/widgets/nozzle_card.dart';
 import 'package:fk_salesman/core/constants/app_text_styles.dart';
@@ -179,16 +180,13 @@ class _AddNozzlesScreenState extends State<AddNozzlesScreen> {
                             final isAlreadyAdded = provider.mySelectedNozzles.any((n) => n.id == nozzle.id);
                             void handleSelect() async {
                               if (isAlreadyAdded) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('This nozzle is already in your dashboard.'),
-                                    backgroundColor: Colors.blueAccent,
-                                  ),
+                                AppAlert.showInfo(
+                                  context,
+                                  message: 'This nozzle is already in your dashboard.',
                                 );
                                 return;
                               }
 
-                              final messenger = ScaffoldMessenger.of(context);
                               final navigator = Navigator.of(context);
                               final router = GoRouter.of(context);
                               _showLoadingPopup(context, 'Selecting Nozzle');
@@ -199,21 +197,17 @@ class _AddNozzlesScreenState extends State<AddNozzlesScreen> {
                               navigator.pop(); // close dialog safely using captured navigator
 
                               if (success) {
-                                messenger.showSnackBar(
-                                  const SnackBar(
-                                    content: Text('You have selected the nozzle successfully.'),
-                                    backgroundColor: Colors.green,
-                                  ),
+                                await AppAlert.showSuccess(
+                                  context,
+                                  message: 'You have selected the nozzle successfully.',
                                 );
-                                router.go('/dashboard');
+                                if (mounted) router.go('/dashboard');
                               } else {
-                                messenger.showSnackBar(
-                                  SnackBar(
-                                    content: Text(provider.error ?? 'Maximum 1 nozzle can be chosen.'),
-                                    backgroundColor: Colors.redAccent,
-                                  ),
+                                await AppAlert.showError(
+                                  context,
+                                  message: provider.error ?? 'Maximum 1 nozzle can be chosen.',
                                 );
-                                router.go('/dashboard');
+                                if (mounted) router.go('/dashboard');
                               }
                             }
 

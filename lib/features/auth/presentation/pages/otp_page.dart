@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:fk_salesman/features/auth/presentation/providers/auth_provider.dart';
 import 'package:fk_salesman/core/constants/app_text_styles.dart';
 import 'package:fk_salesman/core/constants/app_colors.dart';
+import 'package:fk_salesman/core/widgets/app_alert.dart';
 
 class OtpPage extends StatefulWidget {
   final String phoneNumber;
@@ -48,11 +49,9 @@ class _OtpPageState extends State<OtpPage> with SingleTickerProviderStateMixin {
   Future<void> _verifyAndLogin() async {
     final otp = _otpControllers.map((c) => c.text).join();
     if (otp.length < 4) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter all 4 digits'),
-          backgroundColor: Colors.redAccent,
-        ),
+      AppAlert.showWarning(
+        context,
+        message: 'Please enter all 4 digits',
       );
       return;
     }
@@ -62,19 +61,17 @@ class _OtpPageState extends State<OtpPage> with SingleTickerProviderStateMixin {
     
     final success = await authProvider.verifyOtp();
     if (success && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Login successful!'),
-          backgroundColor: Colors.green,
-        ),
+      await AppAlert.showSuccess(
+        context,
+        message: 'Login successful!',
       );
-      context.go('/dashboard');
+      if (mounted) {
+        context.go('/dashboard');
+      }
     } else if (!success && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(authProvider.error ?? 'Verification failed'),
-          backgroundColor: Colors.redAccent,
-        ),
+      AppAlert.showError(
+        context,
+        message: authProvider.error ?? 'Verification failed',
       );
     }
   }

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:fk_salesman/core/constants/app_text_styles.dart';
 import 'package:fk_salesman/core/constants/app_colors.dart';
+import 'package:fk_salesman/core/widgets/app_alert.dart';
 import 'package:fk_salesman/features/dashboard/presentation/providers/dashboard_provider.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../domain/models/attendance_record_model.dart';
@@ -146,31 +147,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
         if (mounted) {
           if (success) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Checked out successfully!'),
-                backgroundColor: Colors.green,
-                behavior: SnackBarBehavior.floating,
-              ),
+            AppAlert.showSuccess(
+              context,
+              message: 'Checked out successfully!',
             );
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(provider.error ?? 'Failed to check out'),
-                backgroundColor: Colors.redAccent,
-                behavior: SnackBarBehavior.floating,
-              ),
+            AppAlert.showError(
+              context,
+              message: provider.error ?? 'Failed to check out',
             );
           }
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Error: $e'),
-              backgroundColor: Colors.redAccent,
-              behavior: SnackBarBehavior.floating,
-            ),
+          AppAlert.showError(
+            context,
+            message: 'Error: $e',
           );
         }
       } finally {

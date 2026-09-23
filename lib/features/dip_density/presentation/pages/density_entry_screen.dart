@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:fk_salesman/core/constants/app_colors.dart';
 import 'package:fk_salesman/core/constants/app_text_styles.dart';
+import 'package:fk_salesman/core/widgets/app_alert.dart';
 import '../providers/dip_density_provider.dart';
 import '../../data/models/fuel_tank_model.dart';
 
@@ -90,8 +91,9 @@ class _DensityEntryScreenState extends State<DensityEntryScreen> {
     }
 
     if (_selectedProduct == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please select a Product.")),
+      AppAlert.showWarning(
+        context,
+        message: "Please select a Product.",
       );
       return;
     }
@@ -105,19 +107,15 @@ class _DensityEntryScreenState extends State<DensityEntryScreen> {
 
     if (mounted) {
       if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Density entry submitted successfully!"),
-            backgroundColor: Colors.green,
-          ),
+        await AppAlert.showSuccess(
+          context,
+          message: "Density entry submitted successfully!",
         );
-        context.go('/dashboard');
+        if (mounted) context.go('/dashboard');
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(provider.error ?? "Failed to submit density entry"),
-            backgroundColor: Colors.redAccent,
-          ),
+        AppAlert.showError(
+          context,
+          message: provider.error ?? "Failed to submit density entry",
         );
       }
     }

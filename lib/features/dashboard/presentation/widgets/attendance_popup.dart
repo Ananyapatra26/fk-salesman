@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fk_salesman/core/constants/app_colors.dart';
+import 'package:fk_salesman/core/widgets/app_alert.dart';
 import 'package:fk_salesman/features/dashboard/presentation/providers/dashboard_provider.dart';
 import 'package:fk_salesman/features/auth/presentation/providers/auth_provider.dart';
 import 'package:go_router/go_router.dart';
@@ -30,7 +31,6 @@ class _AttendancePopupState extends State<AttendancePopup> {
     final minute = now.minute.toString().padLeft(2, '0');
     final period = now.period == DayPeriod.am ? 'AM' : 'PM';
     final timeFormatted = '$hour:$minute $period';
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     final success = await provider.markAttendance('checkin');
 
@@ -42,18 +42,20 @@ class _AttendancePopupState extends State<AttendancePopup> {
       await prefs.setString("attendance_time", timeFormatted);
 
       if (mounted) {
-        scaffoldMessenger.showSnackBar(
-          const SnackBar(content: Text('Attendance Marked Successfully!'), backgroundColor: Colors.green),
-        );
         widget.onCheckedIn();
+        AppAlert.showSuccess(
+          context,
+          message: 'Attendance Marked Successfully!',
+        );
       }
     } else {
       if (mounted) {
         setState(() {
           _isLoading = false;
         });
-        scaffoldMessenger.showSnackBar(
-          SnackBar(content: Text(provider.error ?? 'Failed to mark attendance'), backgroundColor: Colors.redAccent),
+        AppAlert.showError(
+          context,
+          message: provider.error ?? 'Failed to mark attendance',
         );
       }
     }

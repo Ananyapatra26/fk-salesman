@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fk_salesman/core/constants/app_colors.dart';
 import 'package:fk_salesman/core/constants/app_text_styles.dart';
+import 'package:fk_salesman/core/widgets/app_alert.dart';
 import '../../../../features/sales/data/models/nozzle_detail_response_model.dart';
 
 class NozzleInitiationDialog extends StatelessWidget {
@@ -220,8 +221,9 @@ class _NozzleClosingDialogState extends State<NozzleClosingDialog> {
                   if (_closingController.text.isNotEmpty) {
                     widget.onSubmit(_closingController.text);
                   } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Please enter closing reading')),
+                    AppAlert.showWarning(
+                      context,
+                      message: 'Please enter closing reading',
                     );
                   }
                 },
