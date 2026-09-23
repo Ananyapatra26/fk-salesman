@@ -442,7 +442,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                   fontWeight: FontWeight.w900,
                                 ),
                               ),
-                              const TextSpan(text: ' and '),
+                              const TextSpan(text: ' and  '),
                               TextSpan(
                                 text: 'Privacy Policy',
                                 style: TextStyle(
