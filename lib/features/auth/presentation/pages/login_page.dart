@@ -27,8 +27,13 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   @override
   void initState() {
     super.initState();
-    _selectedClient = 'laxmipratima';
-    SessionManager.setClient('laxmipratima');
+    final currentClient = SessionManager.getClient();
+    if (['laxmipratima', 'shaktiksk', 'devtest'].contains(currentClient)) {
+      _selectedClient = currentClient;
+    } else {
+      _selectedClient = 'laxmipratima';
+      SessionManager.setClient('laxmipratima');
+    }
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1200),
@@ -257,6 +262,10 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                         DropdownMenuItem(
                                           value: 'shaktiksk',
                                           child: Text('Shakti KSK'),
+                                        ),
+                                        DropdownMenuItem(
+                                          value: 'devtest',
+                                          child: Text('DevTest'),
                                         ),
                                       ],
                                       onChanged: (String? newValue) {

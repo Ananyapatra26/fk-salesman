@@ -11,7 +11,7 @@ plugins {
 android {
     namespace = "com.fuelkhata.fsmapp"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -32,7 +32,10 @@ android {
         create("release") {
             keyAlias = keystoreProperties["keyAlias"] as String?
             keyPassword = keystoreProperties["keyPassword"] as String?
-            storeFile = (keystoreProperties["storeFile"] as String?)?.let { path -> file(path) }
+            storeFile = (keystoreProperties["storeFile"] as String?)?.let { path ->
+                val f = file(path)
+                if (f.exists()) f else rootProject.file(path)
+            }
             storePassword = keystoreProperties["storePassword"] as String?
         }
     }
@@ -52,11 +55,14 @@ android {
         release {
             signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
-            isShrinkResources = true
+            isShrinkResources = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            ndk {
+                debugSymbolLevel = "none"
+            }
         }
     }
 }

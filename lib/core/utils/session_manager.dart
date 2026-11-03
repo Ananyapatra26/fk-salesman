@@ -45,9 +45,11 @@ class SessionManager {
 
   static String getBaseUrl() {
     final client = getClient();
-    final host = client == 'shaktiksk'
-        ? 'https://shaktiksk.fuelkhata.com'
-        : 'https://fuelkhata-app-dev.webuserve.in';
+    final host = (client == 'shaktiksk' || client == 'shakti')
+        ? 'https://shaktiksk.fuelkhata.app'
+        : client == 'devtest'
+            ? 'https://devtest.fuelkhata.app'
+            : 'https://laxmipratima.fuelkhata.app';
     return '$host/api/v1/fsm/app/salesman';
   }
 

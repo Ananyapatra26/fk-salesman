@@ -139,10 +139,12 @@ class _NozzleTestingScreenState extends State<NozzleTestingScreen> {
         // Refresh dashboard data and wait for it
         await context.read<DashboardProvider>().fetchNozzles();
         
-        await AppAlert.showSuccess(
-          context,
-          message: response['message'] ?? "Testing info submitted successfully",
-        );
+        if (mounted) {
+          await AppAlert.showSuccess(
+            context,
+            message: response['message'] ?? "Testing info submitted successfully",
+          );
+        }
         if (mounted) context.go('/dashboard');
       }
     } catch (e) {
@@ -157,33 +159,89 @@ class _NozzleTestingScreenState extends State<NozzleTestingScreen> {
     }
   }
 
+  bool get _hasUnsavedData {
+    return _qtyController.text.trim().isNotEmpty ||
+        _remarkController.text.trim().isNotEmpty ||
+        _image1 != null ||
+        _image2 != null ||
+        _image3 != null;
+  }
+
+  void _clearAllInputtedData() {
+    _qtyController.clear();
+    _remarkController.clear();
+    setState(() {
+      _image1 = null;
+      _image2 = null;
+      _image3 = null;
+    });
+  }
+
+  Future<bool> _handleBackPress() async {
+    if (_isSubmitting) return false;
+
+    if (!_hasUnsavedData) {
+      return true;
+    }
+
+    final shouldLeave = await AppAlert.showConfirm(
+      context,
+      title: "ARE YOU SURE?",
+      message:
+          "Are you sure you want to go back? All inputted data will be cleared.",
+      confirmText: "YES, GO BACK",
+      cancelText: "CANCEL",
+      type: AppAlertType.warning,
+    );
+
+    if (shouldLeave == true) {
+      _clearAllInputtedData();
+      return true;
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(
-        0xFFF8F9FA,
-      ), // Light grey/off-white background
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios,
-            color: AppColors.textDark,
-            size: 20,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, dynamic result) async {
+        if (didPop) return;
+        final shouldPop = await _handleBackPress();
+        if (shouldPop && context.mounted) {
+          Navigator.pop(context);
+        }
+      },
+      child: Scaffold(
+        backgroundColor: const Color(
+          0xFFF8F9FA,
+        ), // Light grey/off-white background
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          centerTitle: true,
+          leading: IconButton(
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: AppColors.textDark,
+              size: 20,
+            ),
+            onPressed: () async {
+              final shouldPop = await _handleBackPress();
+              if (shouldPop && context.mounted) {
+                Navigator.pop(context);
+              }
+            },
           ),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          "NOZZLE TESTING",
-          style: AppTextStyles.labelBold.copyWith(
-            color: AppColors.textDark,
-            letterSpacing: 2,
-            fontSize: 14,
+          title: Text(
+            "NOZZLE TESTING",
+            style: AppTextStyles.labelBold.copyWith(
+              color: AppColors.textDark,
+              letterSpacing: 2,
+              fontSize: 14,
+            ),
           ),
         ),
-      ),
       body: Stack(
         children: [
           SafeArea(
@@ -261,7 +319,8 @@ class _NozzleTestingScreenState extends State<NozzleTestingScreen> {
             ),
         ],
       ),
-    );
+    ),
+  );
   }
 
   Widget _buildNozzleInfoCard() {
